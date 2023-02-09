@@ -12,8 +12,6 @@ const sendResponse=(req,res,configObject)=>{
             data: payload
         });
     }
-    
-
 };
 
 module.exports=sendResponse;

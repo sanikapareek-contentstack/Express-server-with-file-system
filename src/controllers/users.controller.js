@@ -1,10 +1,9 @@
 const sendResponse=require("../helpers/sendResponse");
 const sendErrorResponse=require("../helpers/sendErrorResponse");
 const readFilePromise = require("../helpers/readingFile");
-const writeFilePromise=require("../helpers/writingFile");
-const User=require("../model/User.Model")
-const AppError = require("../AppError");
 const writeFile = require("../helpers/writingFile");
+const User=require("../model/User.Model")
+const AppError = require("../helpers/appError");
 const path="./data/users.json"
 
 const getUsers=(req,res)=>{
@@ -21,12 +20,12 @@ const getUsers=(req,res)=>{
 }
 
 const getUserById=(req,res)=>{
+    const{params:{id}}=req;
     readFilePromise(path)
         .then((users)=>{
             return JSON.parse(users);
         })
         .then((users)=>{
-            const{params:{id}}=req;
             const user=users.find((user)=>user.id===id);
             if(!user){
                 
@@ -93,7 +92,6 @@ const deleteUser=(req,res)=>{
             return JSON.parse(users);
         })
         .then((users)=>{
-            const {params:{id}}=req;
             const user=users.find((user)=>user.id===id);
             if(!user){
                 return sendErrorResponse(new AppError("User with this Id doesn't exist",404),req,res);
@@ -102,11 +100,10 @@ const deleteUser=(req,res)=>{
             users.splice(index,1);
             try{
                 writeFile(path,users);
-                return sendResponse(req,res,{statusCode:204,message:"User deleted sucessfully"})
+                return sendResponse(req,res,{statusCode:200,message:"User deleted sucessfully"})
             }catch(err){
                 return sendErrorResponse(new AppError("Unable to write the file",500),req,res);
             }
-
         })
         .catch((err)=>{
             console.log(err);
@@ -125,7 +122,7 @@ const validateUpdateData=(req,res,next)=>{
 
     const result=Object.keys(body).every((key)=>validKeys.includes(key));
     if(!result){
-        return sendErrorResponse(new AppError("Data Missing",422),req,res);
+        return sendErrorResponse(new AppError("Data Missing or invalid",422),req,res);
     }
     next();
 }
@@ -138,7 +135,6 @@ const updateUser=(req,res)=>{
             return JSON.parse(users);
         })
         .then((users)=>{
-            const {params:{id}}=req;
             const user=users.find((user)=>user.id===id);
             if(!user){
                 return sendErrorResponse(new AppError("User with this Id doesn't exist",404),req,res);
@@ -159,4 +155,12 @@ const updateUser=(req,res)=>{
 
 }
 
-module.exports={getUsers,getUserById,validateUser,createUser,deleteUser,validateUpdateData,updateUser}
+module.exports={
+    getUsers,
+    getUserById,
+    validateUser,
+    createUser,
+    deleteUser,
+    validateUpdateData,
+    updateUser
+}
