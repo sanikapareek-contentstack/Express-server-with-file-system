@@ -1,0 +1,25 @@
+{
+  "name": "express-server-with-file-system",
+  "version": "1.0.0",
+  "description": "express server with file system task",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanikapareek-contentstack/Express-server-with-file-system.git"
+  },
+  "keywords": [
+    "Node"
+  ],
+  "author": "Sanika Pareek",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sanikapareek-contentstack/Express-server-with-file-system/issues"
+  },
+  "homepage": "https://github.com/sanikapareek-contentstack/Express-server-with-file-system#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
