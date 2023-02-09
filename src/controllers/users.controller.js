@@ -5,10 +5,10 @@ const writeFilePromise=require("../helpers/writingFile");
 const User=require("../model/User.Model")
 const AppError = require("../AppError");
 const writeFile = require("../helpers/writingFile");
-
+const path="/Users/sanika.pareek/Desktop/Express-server-with-file-system/data/users.json"
 
 const getUsers=(req,res)=>{
-    readFilePromise("/Users/sanika.pareek/Desktop/Express-server-with-file-system/data/users.json")
+    readFilePromise(path)
         .then((users)=>{
             return JSON.parse(users);
         })
@@ -21,7 +21,7 @@ const getUsers=(req,res)=>{
 }
 
 const getUserById=(req,res)=>{
-    readFilePromise("/Users/sanika.pareek/Desktop/Express-server-with-file-system/data/users.json")
+    readFilePromise(path)
         .then((users)=>{
             return JSON.parse(users);
         })
@@ -56,7 +56,7 @@ const validateUser=(req,res,next)=>{
 }
 
 const createUser=(req,res)=>{
-    readFilePromise("/Users/sanika.pareek/Desktop/Express-server-with-file-system/data/users.json")
+    readFilePromise(path)
         .then((users)=>{
             return JSON.parse(users);
         })
@@ -73,7 +73,7 @@ const createUser=(req,res)=>{
             users.push(newUser);
 
             try{
-                writeFile("/Users/sanika.pareek/Desktop/Express-server-with-file-system/data/users.json",users);
+                writeFile(path,users);
                 return sendResponse(req,res,{statusCode:200,message:"User added successfully",payload:newUser})
             }catch(err){
                 return sendErrorResponse(new AppError("Unable to write the file",500),req,res);
@@ -85,6 +85,77 @@ const createUser=(req,res)=>{
         })
 }
 
+const deleteUser=(req,res)=>{
+    const {params:{id}}=req;
+    readFilePromise(path)
+        .then((users)=>{
+            return JSON.parse(users);
+        })
+        .then((users)=>{
+            const {params:{id}}=req;
+            const user=users.find((user)=>user.id===id);
+            if(!user){
+                return sendErrorResponse("User with this Id doesn't exist",404,req,res);
+            }
+            const index=users.findIndex(user=>user.id===id);
+            users.splice(index,1);
+            try{
+                writeFile(path,users);
+                return sendResponse(req,res,{statusCode:204,message:"User deleted sucessfully"})
+            }catch(err){
+                return sendErrorResponse(new AppError("Unable to write the file",500),req,res);
+            }
 
+        })
+        .catch((err)=>{
+            console.log(err);
+            sendErrorResponse(new AppError("Unable to read the file",500),req,res);
+        })
+}
 
-module.exports={getUsers,getUserById,validateUser,createUser}
+const validateUpdateData=(req,res,next)=>{
+    const {body}=req;
+    const validKeys=[
+        "name",
+        "profileImage",
+        "introduction",
+        "profileLink"
+    ]
+
+    const result=Object.keys(body).every((key)=>validKeys.includes(key));
+    if(!result){
+        return sendErrorResponse(new AppError("Data Missing",422),req,res);
+    }
+    next();
+}
+
+const updateUser=(req,res)=>{
+    const {params:{id}}=req;
+    const {body}=req;
+    readFilePromise(path)
+        .then((users)=>{
+            return JSON.parse(users);
+        })
+        .then((users)=>{
+            const {params:{id}}=req;
+            const user=users.find((user)=>user.id===id);
+            if(!user){
+                return sendErrorResponse("User with this Id doesn't exist",404,req,res);
+            }
+            Object.keys(body).forEach((key)=>user[key]=body[key]);
+            try{
+                writeFile(path,users);
+                return sendResponse(req,res,{statusCode:201,message:"User updated sucessfully",payload:user})
+            }catch(err){
+                return sendErrorResponse(new AppError("Unable to write the file",500),req,res);
+            }
+
+        })
+        .catch((err)=>{
+            console.log(err);
+            sendErrorResponse(new AppError("Unable to read the file",500),req,res);
+        })
+
+}
+
+module.exports={getUsers,getUserById,validateUser,createUser,deleteUser,validateUpdateData,updateUser}
