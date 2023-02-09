@@ -2,9 +2,11 @@
   "name": "express-server-with-file-system",
   "version": "1.0.0",
   "description": "express server with file system task",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev":"nodemon ./src/app.js",
+    "start": "node ./src/app.js"
   },
   "repository": {
     "type": "git",
