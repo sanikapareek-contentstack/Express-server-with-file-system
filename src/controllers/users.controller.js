@@ -5,7 +5,7 @@ const writeFilePromise=require("../helpers/writingFile");
 const User=require("../model/User.Model")
 const AppError = require("../AppError");
 const writeFile = require("../helpers/writingFile");
-const path="/Users/sanika.pareek/Desktop/Express-server-with-file-system/data/users.json"
+const path="./data/users.json"
 
 const getUsers=(req,res)=>{
     readFilePromise(path)
@@ -29,6 +29,7 @@ const getUserById=(req,res)=>{
             const{params:{id}}=req;
             const user=users.find((user)=>user.id===id);
             if(!user){
+                
                 return sendErrorResponse(new AppError("User with this Id doesn't exist",404),req,res);
             }
             return sendResponse(req,res,{statusCode:200,message:"User Found",payload:user});
@@ -95,7 +96,7 @@ const deleteUser=(req,res)=>{
             const {params:{id}}=req;
             const user=users.find((user)=>user.id===id);
             if(!user){
-                return sendErrorResponse("User with this Id doesn't exist",404,req,res);
+                return sendErrorResponse(new AppError("User with this Id doesn't exist",404),req,res);
             }
             const index=users.findIndex(user=>user.id===id);
             users.splice(index,1);
@@ -140,7 +141,7 @@ const updateUser=(req,res)=>{
             const {params:{id}}=req;
             const user=users.find((user)=>user.id===id);
             if(!user){
-                return sendErrorResponse("User with this Id doesn't exist",404,req,res);
+                return sendErrorResponse(new AppError("User with this Id doesn't exist",404),req,res);
             }
             Object.keys(body).forEach((key)=>user[key]=body[key]);
             try{
